@@ -1,7 +1,7 @@
 import useSpline from "@splinetool/r3f-spline";
 import { OrthographicCamera } from "@react-three/drei";
-import { Suspense, useRef } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Suspense } from "react";
+import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 
 function Scene({ ...props }) {
@@ -9,19 +9,11 @@ function Scene({ ...props }) {
     "https://prod.spline.design/wdGgjXPevqAJbWdg/scene.splinecode"
   );
 
-  const meshRef = useRef();
-  useFrame(() => {
-    if (meshRef.current) {
-      meshRef.current.rotation.y += 0.005;
-    }
-  });
-
   return (
     <>
-      <group {...props} dispose={null}>
+      <group {...props} dispose={null} position={[0, 0, 0]}>
         <scene name="Scene">
           <mesh
-            ref={meshRef}
             name="Sphere"
             geometry={nodes.Sphere.geometry}
             material={materials["Sphere Material"]}
@@ -51,7 +43,7 @@ function Scene({ ...props }) {
             far={10000}
             near={-50000}
             zoom={0.5}
-            position={[0, 0, 0]}
+            position={[0, 0, 10]}
           />
           <hemisphereLight
             name="Default Ambient Light"
@@ -75,9 +67,8 @@ export default function Globe() {
           enableZoom={false}
           minPolarAngle={Math.PI / 2 - 0.3}
           maxPolarAngle={Math.PI / 2 + 0.3}
-          minAzimuthAngle={-Math.PI / 4}
-          maxAzimuthAngle={Math.PI / 4}
           rotateSpeed={0.1}
+          autoRotate={true}
         />
       </Canvas>
     </Suspense>
