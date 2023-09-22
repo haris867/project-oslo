@@ -1,0 +1,46 @@
+@import url("https://fonts.googleapis.com/css2?family=Princess+Sofia&family=Righteous&display=swap");
+
+@import "~bootstrap/scss/bootstrap";
+
+html {
+  --color-primary: #fae5d3;
+  --color-secondary: #2c3e50;
+  --color-tertiary: #f5f5f5;
+  --color-quaternary: #ffb085;
+  --color-quinary: #a8dadc;
+}
+
+body {
+  background-color: var(--color-primary);
+  color: var(--color-secondary);
+  font-family: "Righteous", sans-serif;
+}
+
+.layout-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.layout-outlet {
+  flex: 1;
+}
+
+.globe canvas {
+  min-height: 40vh;
+}
+
+.fade-in {
+  opacity: 0;
+  animation: fadeIn 2s forwards 1s;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}

@@ -1,7 +1,11 @@
+import Globe from "../../components/globe";
+
 export default function Home() {
   return (
     <div>
-      <h1>Project Oslo</h1>
+      <div className="globe fade-in">
+        <Globe />
+      </div>
     </div>
   );
 }
