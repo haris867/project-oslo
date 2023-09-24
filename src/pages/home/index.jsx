@@ -72,7 +72,9 @@ export default function Home() {
             onChange={(e) => setInputValue(e.target.value)}
             placeholder="Datoen vår (ddmmåå)"
           />
-          <PrimaryButton onClick={handleSubmit}>ÅPNE</PrimaryButton>
+          <PrimaryButton className="mx-auto" onClick={handleSubmit}>
+            ÅPNE
+          </PrimaryButton>
           {error && <p style={{ color: "red" }}>{error}</p>}
         </AccessContainer>
       ) : (
