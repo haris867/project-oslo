@@ -44,3 +44,61 @@ body {
     opacity: 1;
   }
 }
+
+.card-div {
+  background-color: var(--color-tertiary);
+  border-radius: 8px;
+  width: 85%;
+  max-width: 400px;
+  cursor: pointer;
+}
+
+.back-image {
+  width: calc(100px + 1vw);
+  height: calc(100px + 1vw);
+  aspect-ratio: 1/1 !important;
+  border-radius: 4px;
+  position: absolute;
+  background-color: var(--color-quinary);
+  transform: rotate(170deg) translateX(7px) translateY(9px);
+}
+.back-image2 {
+  width: calc(100px + 1vw);
+  height: calc(100px + 1vw);
+  aspect-ratio: 1/1 !important;
+  border-radius: 4px;
+  position: absolute;
+  background-color: var(--color-quaternary);
+  transform: rotate(175deg) translateX(4px) translateY(4px);
+}
+
+.card-div img {
+  width: calc(100px + 1vw);
+  height: calc(100px + 1vw);
+  aspect-ratio: 1/1 !important;
+  object-fit: cover;
+  border-radius: 4px;
+  z-index: 2;
+}
+
+.princess-sofia {
+  font-family: "Princess Sofia", sans-serif;
+}
+
+.collapse-buttons {
+  gap: 10px;
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.3s ease-in-out;
+}
+
+.collapse-buttons.expanded {
+  max-height: 100px;
+}
+
+.adventure-image {
+  width: 85%;
+}
+.adventure-image img {
+  border-radius: 4px;
+}
