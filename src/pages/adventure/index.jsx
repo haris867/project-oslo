@@ -37,7 +37,7 @@ export default function Adventure() {
                   src={image.imageUrl}
                   alt={
                     image.caption ||
-                    `Image from ${singleAdventure.title} ${singleAdventure.year}`
+                    `${singleAdventure.title} ${singleAdventure.year}`
                   }
                 />
               </div>

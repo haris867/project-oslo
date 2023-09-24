@@ -39,7 +39,7 @@ export default function AdventureCards() {
                     ? adventure.images[0].imageUrl
                     : "/images/test-image.jpg"
                 }
-                alt={`Image from ${adventure.title} ${adventure.year}`}
+                alt={` ${adventure.title} ${adventure.year}`}
                 className="mx-4 my-3 position-relative"
               />
             </div>
