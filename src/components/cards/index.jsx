@@ -6,16 +6,38 @@ import { Link } from "react-router-dom";
 import heic2any from "heic2any";
 import { v4 as uuidv4 } from "uuid";
 import { save } from "../../hooks/storage";
+import { AccessInput } from "../../pages/home";
+import { Jelly } from "@uiball/loaders";
 
 function getSingleAdventureUrl(adventureId) {
-  return `https://k0wle2wy.api.sanity.io/v2021-10-21/data/query/production?query=*%5B_type+%3D%3D+%22adventures%22+%26%26+_id+%3D%3D+%22${adventureId}%22%5D%7B%0A++_id%2C%0A++title%2C%0A++year%2C%0A++images%5B%5D%7B%0A++++%22imageUrl%22%3A+image.asset-%3Eurl%2C%0A++++caption%0A++%7D%0A%7D%0A%0A%0A`;
+  return `https://k0wle2wy.api.sanity.io/v2021-10-21/data/query/production?query=*%5B_type+%3D%3D+%22adventures%22+%26%26+_id+%3D%3D+%22${adventureId}%22+%5D%7B%0A++_id%2C%0A++title%2C%0A++year%2C%0A++images%5B%5D%7B%0A++++%22imageUrl%22%3A+image.asset-%3Eurl%2C%0A++++caption%2C%0A++++_key%0A++%7D%0A%7D%0A%0A%0A`;
 }
 
+const rotateImage = (src, callback) => {
+  const img = new Image();
+  img.onload = function () {
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = img.height;
+    canvas.height = img.width;
+    ctx.translate(canvas.width / 2, canvas.height / 2);
+    ctx.rotate((90 * Math.PI) / 180);
+    ctx.drawImage(img, -img.width / 2, -img.height / 2);
+    callback(canvas.toDataURL());
+  };
+  img.src = src;
+};
+
 export default function AdventureCards() {
-  // REMOVED ISLOADING AND ISERROR(RE-ADD THEM)
   const { data } = useGetData(fetchUrl);
   const sortedData = data.sort((a, b) => a.year - b.year);
   const [collapsed, setCollapsed] = useState({});
+  const [preview, setPreview] = useState({
+    image: null,
+    caption: "",
+    adventureId: null,
+  });
+  const [isUploading, setIsUploading] = useState(false);
 
   const toggleCollapse = (id) => {
     setCollapsed((prevState) => ({
@@ -25,6 +47,7 @@ export default function AdventureCards() {
   };
 
   const handleUpload = async (fileToUpload) => {
+    setIsUploading(true);
     const projectId = "k0wle2wy";
     const dataset = "production";
     const apiVersion = "v2021-10-21";
@@ -46,6 +69,7 @@ export default function AdventureCards() {
 
     if (uploadRes.ok) {
       const uploadData = await uploadRes.json();
+      setIsUploading(false);
       return uploadData.document._id;
     } else {
       console.error("Failed to upload image");
@@ -53,14 +77,13 @@ export default function AdventureCards() {
     }
   };
 
-  const updateAdventureWithImage = async (adventureId, imageId) => {
+  const updateAdventureWithImage = async (adventureId, imageId, caption) => {
     const projectId = "k0wle2wy";
     const dataset = "production";
     const apiVersion = "v2021-10-21";
     const token =
       "skQXBZxoC3J1ch9qK2xi7tE7h3rfUm7dt0OvXDUmsJmEULZO7mg3kQVna8Itj22FSzFGr5rEqBygZfRcO9NdvvNLRUFhQgivM3bcvbkEUJbH0HOcs9gECvR8WBaRh1suom3zp5WKAB5VCkO7HWRM0aTmzH5zsWkZRntVq5GhO04Z31KEEJFl";
 
-    // Fetch the current adventure document
     const getUrl = `https://${projectId}.api.sanity.io/${apiVersion}/data/query/${dataset}?query=*[_id=="${adventureId}"][0]`;
     const getRes = await fetch(getUrl, {
       headers: {
@@ -81,16 +104,17 @@ export default function AdventureCards() {
       _key: uuidv4(),
       image: {
         _type: "image",
-        _key: uuidv4(),
         asset: {
           _type: "reference",
           _ref: imageId,
         },
       },
-      caption: "",
+      caption: caption, // Use the caption from the function argument
     };
 
+    console.log("Current Images:", currentImages);
     currentImages.push(imageWithCaption);
+    console.log("Updated Images:", currentImages);
 
     const postUrl = `https://${projectId}.api.sanity.io/${apiVersion}/data/mutate/${dataset}`;
     const postRes = await fetch(postUrl, {
@@ -121,9 +145,44 @@ export default function AdventureCards() {
   };
 
   const handleFileChange = async (event, adventureId) => {
-    console.log("Adventure ID:", adventureId);
     const file = event.target.files[0];
+    const reader = new FileReader();
 
+    reader.onloadend = () => {
+      if (file.type === "image/heic") {
+        rotateImage(reader.result, (rotatedImage) => {
+          setPreview({
+            image: rotatedImage,
+            caption: "",
+            adventureId: adventureId,
+          });
+        });
+      } else {
+        setPreview({
+          image: reader.result,
+          caption: "",
+          adventureId: adventureId,
+        });
+      }
+    };
+
+    if (file) {
+      if (file.type === "image/heic") {
+        const convertedBlob = await heic2any({
+          blob: file,
+          toType: "image/jpeg",
+          quality: 1,
+          keepOrientation: true,
+        });
+        reader.readAsDataURL(convertedBlob);
+      } else {
+        reader.readAsDataURL(file);
+      }
+    }
+  };
+
+  const handleConfirmUpload = async () => {
+    const file = dataURLtoFile(preview.image, "preview.jpg");
     let assetId;
     if (file.type === "image/heic") {
       const convertedBlob = await heic2any({
@@ -136,15 +195,34 @@ export default function AdventureCards() {
       assetId = await handleUpload(file);
     }
     if (assetId) {
-      await updateAdventureWithImage(adventureId, assetId);
-      const response = await fetch(getSingleAdventureUrl(adventureId));
+      await updateAdventureWithImage(
+        preview.adventureId,
+        assetId,
+        preview.caption
+      ); // Pass the caption here
+      const response = await fetch(getSingleAdventureUrl(preview.adventureId));
       const updatedAdventureData = await response.json();
 
-      // Extract the result field from the response
       const updatedAdventure = updatedAdventureData.result;
-
-      save(getSingleAdventureUrl(adventureId), updatedAdventure);
+      save(getSingleAdventureUrl(preview.adventureId), updatedAdventure);
     }
+    setPreview({
+      image: null,
+      caption: "",
+      adventureId: null,
+    });
+  };
+
+  const dataURLtoFile = (dataurl, filename) => {
+    let arr = dataurl.split(","),
+      mime = arr[0].match(/:(.*?);/)[1],
+      bstr = atob(arr[1]),
+      n = bstr.length,
+      u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, { type: mime });
   };
 
   return (
@@ -206,6 +284,44 @@ export default function AdventureCards() {
           </div>
         </div>
       ))}
+      {preview.image && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            backgroundColor: "rgba(0, 0, 0, 0.4)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 999,
+          }}
+        >
+          {isUploading && (
+            <div className="text-center d-flex justify-content-center pt-5">
+              <Jelly size={80} speed={0.9} color="#ffb085" />;
+            </div>
+          )}
+          <img
+            src={preview.image}
+            alt="Preview"
+            style={{ maxWidth: "90%", marginBottom: "20px" }}
+          />
+          <AccessInput
+            className="w-75 mb-2"
+            type="text"
+            placeholder="Bildetekst?"
+            value={preview.caption}
+            onChange={(e) =>
+              setPreview((prev) => ({ ...prev, caption: e.target.value }))
+            }
+          />
+          <PrimaryButton onClick={handleConfirmUpload}>LEGG TIL</PrimaryButton>
+        </div>
+      )}
     </>
   );
 }

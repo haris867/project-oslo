@@ -8,13 +8,14 @@ import {
   MainHeading,
   SubHeading,
 } from "../../components/commonStyles/headings";
+import { AiOutlineArrowUp } from "react-icons/ai";
 
 const AccessContainer = styled.div`
   max-width: 300px;
   gap: 10px;
 `;
 
-const AccessInput = styled.input`
+export const AccessInput = styled.input`
   background-color: #fff;
   border: 2px solid #fff;
   border-radius: 5px;
@@ -57,7 +58,7 @@ export default function Home() {
 
   return (
     <div>
-      <div className="text-center pt-5">
+      <div className="home-headings text-center pt-5">
         <MainHeading>Olivia og Haris</MainHeading>
         <SubHeading>PÅ EVENTYR</SubHeading>
       </div>
@@ -65,7 +66,7 @@ export default function Home() {
         <Globe />
       </div>
       {!isCorrect ? (
-        <AccessContainer className="d-flex flex-column justify-content-center w-75 mx-auto mt-4">
+        <AccessContainer className="fade-in d-flex flex-column justify-content-center w-75 mx-auto mt-4">
           <AccessInput
             type="text"
             value={inputValue}
@@ -78,8 +79,13 @@ export default function Home() {
           {error && <p style={{ color: "red" }}>{error}</p>}
         </AccessContainer>
       ) : (
-        <div>
+        <div className="fade-in">
           <AdventureCards />
+          <h1 className="text-center">
+            <a href="#top" className="scroll-arrow">
+              <AiOutlineArrowUp />
+            </a>
+          </h1>
         </div>
       )}
     </div>

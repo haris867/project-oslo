@@ -8,6 +8,7 @@ html {
   --color-tertiary: #f5f5f5;
   --color-quaternary: #ffb085;
   --color-quinary: #a8dadc;
+  scroll-behavior: smooth;
 }
 
 body {
@@ -35,7 +36,7 @@ body {
 
 .fade-in {
   opacity: 0;
-  animation: fadeIn 2s forwards 1s;
+  animation: fadeIn 2s forwards 2s;
 }
 
 @keyframes fadeIn {
@@ -46,6 +47,11 @@ body {
   100% {
     opacity: 1;
   }
+}
+
+.home-headings {
+  opacity: 0;
+  animation: fadeIn 1s forwards 1s;
 }
 
 .card-div {
@@ -104,4 +110,20 @@ body {
 }
 .adventure-image img {
   border-radius: 4px;
+}
+
+img {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.preview-container {
+  min-width: 85%;
+  background-color: var(--color-primary);
+  border-radius: 4px;
+}
+
+.scroll-arrow svg {
+  color: var(--color-secondary) !important;
+  font-size: 2em;
 }
