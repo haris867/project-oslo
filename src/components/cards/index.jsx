@@ -193,7 +193,6 @@ export default function AdventureCards() {
                   id={`icon-button-file-${adventure._id}`}
                   className="d-none"
                   type="file"
-                  capture="environment"
                   onChange={(e) => handleFileChange(e, adventure._id)}
                 />
               </SecondaryButton>
