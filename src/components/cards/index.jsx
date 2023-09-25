@@ -235,19 +235,22 @@ export default function AdventureCards() {
           onClick={() => toggleCollapse(adventure._id)}
         >
           <div className="d-flex">
-            <div className="mt-2">
-              <div className="back-image mx-4 my-3"></div>
-              <div className="back-image mx-4 my-3 back-image2"></div>
-              <img
-                src={
-                  adventure.images[0]
-                    ? adventure.images[0].imageUrl
-                    : "/images/test-image.jpg"
-                }
-                alt={` ${adventure.title} ${adventure.year}`}
-                className="mx-4 my-3 position-relative"
-              />
-            </div>
+            {adventure.images && (
+              <div className="mt-2">
+                <div className="back-image mx-4 my-3"></div>
+                <div className="back-image mx-4 my-3 back-image2"></div>
+
+                <img
+                  src={
+                    adventure.images[0]
+                      ? adventure.images[0].imageUrl
+                      : "/images/test-image.jpg"
+                  }
+                  alt={` ${adventure.title} ${adventure.year}`}
+                  className="mx-4 my-3 position-relative"
+                />
+              </div>
+            )}
             <div className="d-flex flex-column my-auto">
               <h1 className="princess-sofia">{adventure.title}</h1>
               <h2>{adventure.year}</h2>
