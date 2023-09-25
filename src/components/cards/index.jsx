@@ -87,7 +87,7 @@ export default function AdventureCards() {
           _ref: imageId,
         },
       },
-      caption: "", // You can set a default caption or leave it empty
+      caption: "",
     };
 
     currentImages.push(imageWithCaption);
