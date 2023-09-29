@@ -9,7 +9,6 @@ import {
   SubHeading,
 } from "../../components/commonStyles/headings";
 import { AiOutlineArrowUp } from "react-icons/ai";
-import { ScrollToTop } from "../../utils/helpers";
 
 const AccessContainer = styled.div`
   max-width: 300px;
