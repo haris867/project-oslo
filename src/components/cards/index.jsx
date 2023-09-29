@@ -8,6 +8,7 @@ import { v4 as uuidv4 } from "uuid";
 import { save } from "../../hooks/storage";
 import { AccessInput } from "../../pages/home";
 import { Jelly } from "@uiball/loaders";
+import { BiSort } from "react-icons/bi";
 
 function getSingleAdventureUrl(adventureId) {
   return `https://k0wle2wy.api.sanity.io/v2021-10-21/data/query/production?query=*%5B_type+%3D%3D+%22adventures%22+%26%26+_id+%3D%3D+%22${adventureId}%22+%5D%7B%0A++_id%2C%0A++title%2C%0A++year%2C%0A++images%5B%5D%7B%0A++++%22imageUrl%22%3A+image.asset-%3Eurl%2C%0A++++caption%2C%0A++++_key%0A++%7D%0A%7D%0A%0A%0A`;
@@ -30,7 +31,9 @@ const rotateImage = (src, callback) => {
 
 export default function AdventureCards() {
   const { data } = useGetData(fetchUrl);
+  const [isReversed, setIsReversed] = useState(false);
   const sortedData = data.sort((a, b) => a.year - b.year);
+
   const [collapsed, setCollapsed] = useState({});
   const [preview, setPreview] = useState({
     image: null,
@@ -38,6 +41,10 @@ export default function AdventureCards() {
     adventureId: null,
   });
   const [isUploading, setIsUploading] = useState(false);
+
+  const toggleSortOrder = () => {
+    setIsReversed((prev) => !prev);
+  };
 
   const toggleCollapse = (id) => {
     setCollapsed((prevState) => ({
@@ -199,7 +206,7 @@ export default function AdventureCards() {
         preview.adventureId,
         assetId,
         preview.caption
-      ); // Pass the caption here
+      );
       const response = await fetch(getSingleAdventureUrl(preview.adventureId));
       const updatedAdventureData = await response.json();
 
@@ -225,17 +232,22 @@ export default function AdventureCards() {
     return new File([u8arr], filename, { type: mime });
   };
 
+  const displayedData = isReversed ? sortedData.reverse() : sortedData;
+
   return (
     <>
       <h2 className="text-center">Våre eventyralbum</h2>
-      {sortedData.map((adventure) => (
+      <div className="sort-icon-container mx-auto d-flex justify-content-end">
+        <BiSort className="sort-icon" onClick={toggleSortOrder} />
+      </div>
+      {displayedData.map((adventure) => (
         <div
           key={adventure._id}
           className="d-flex flex-column card-div mx-auto m-4"
           onClick={() => toggleCollapse(adventure._id)}
         >
           <div className="d-flex">
-            {adventure.images && (
+            {adventure.images ? (
               <div className="mt-2">
                 <div className="back-image mx-4 my-3"></div>
                 <div className="back-image mx-4 my-3 back-image2"></div>
@@ -244,9 +256,20 @@ export default function AdventureCards() {
                   src={
                     adventure.images[0]
                       ? adventure.images[0].imageUrl
-                      : "/images/test-image.jpg"
+                      : "/images/ho-logo.png"
                   }
                   alt={` ${adventure.title} ${adventure.year}`}
+                  className="mx-4 my-3 position-relative"
+                />
+              </div>
+            ) : (
+              <div className="mt-2">
+                <div className="back-image mx-4 my-3"></div>
+                <div className="back-image mx-4 my-3 back-image2"></div>
+
+                <img
+                  src="/images/ho-logo-icon.png"
+                  alt="Default logo"
                   className="mx-4 my-3 position-relative"
                 />
               </div>
@@ -328,48 +351,3 @@ export default function AdventureCards() {
     </>
   );
 }
-
-// DISPLAYS THREE IMAGES AND NOT JUST ONE (MAYBE?)
-
-// import useGetData from "../../hooks/api/getData";
-// import { fetchUrl } from "../../utils/constants";
-
-// export default function AdventureCards() {
-//   const { data, isFetchLoading, isFetchError } = useGetData(fetchUrl);
-
-//   console.log(data);
-//   const sortedData = data.sort((a, b) => a.year - b.year);
-
-//   return (
-//     <>
-//       {sortedData.map((adventure) => (
-//         <div key={adventure._id} className="d-flex card-div mx-auto m-4">
-//           <div className="mt-2">
-//             <img
-//               src={adventure.images[1].imageUrl}
-//               className="back-image mx-4 my-3"
-//             />
-
-//             <img
-//               src={adventure.images[2].imageUrl}
-//               className="back-image mx-4 my-3 back-image2"
-//             />
-//             <img
-//               src={
-//                 adventure.images[0]
-//                   ? adventure.images[0].imageUrl
-//                   : "/images/test-image.jpg"
-//               }
-//               alt={`Image from ${adventure.title} ${adventure.year}`}
-//               className="mx-4 my-3 position-relative"
-//             />
-//           </div>
-//           <div className="d-flex flex-column my-auto">
-//             <h1 className="princess-sofia">{adventure.title}</h1>
-//             <h2>{adventure.year}</h2>
-//           </div>
-//         </div>
-//       ))}
-//     </>
-//   );
-// }

@@ -127,3 +127,24 @@ img {
   color: var(--color-secondary) !important;
   font-size: 2em;
 }
+
+.sort-icon-container {
+  margin-bottom: -10px;
+  margin-top: -20px;
+  width: 85%;
+  max-width: 400px;
+}
+
+.sort-icon {
+  font-size: 2em;
+  cursor: pointer;
+}
+
+.love-letter-container {
+  width: 85%;
+  max-width: 400px;
+}
+
+footer {
+  min-height: 100px;
+}
