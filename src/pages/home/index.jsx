@@ -48,8 +48,8 @@ export default function Home() {
   const check = String.fromCharCode(51, 48, 48, 57, 49, 51);
 
   const handleSubmit = () => {
-    ScrollToTop();
     if (inputValue === check) {
+      window.scrollTo(0, 0);
       setIsCorrect(true);
       save("accessCode", JSON.stringify(inputValue));
       setError("");
